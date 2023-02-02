@@ -1,0 +1,16 @@
+#   whatever is changing variables i written here see below
+[appservers]
+centos-machine-ip-address java_package_name=java-11-openjdk-devel   # variable-name=variable-value
+ubuntu-machine-ip-address java_package_name=openjdk-11-jdk  # variable-name=variable-value
+
+#   whatever is common variables i written in the vars see below
+[appservers:vars]
+user_name=tomcat
+group_name=tomcat
+user_home=/opt/tomcat
+user_shell=/bin/false
+tomcat_version="10.1.4"
+tomcat_major_version="10"
+tomcat_service_name=tomcat.service
+
+#   group has less priority than host 

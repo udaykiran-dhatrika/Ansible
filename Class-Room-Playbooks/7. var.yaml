@@ -1,0 +1,29 @@
+---
+- name: checking variable demo
+  vars:
+    name: qt
+  hosts: all
+  tasks:
+    - name: print variable value
+      debug:
+        var: name
+    - name: print something else
+      debug:
+        msg: "Hello, {{ name }}"    # interpolation(static content anddynamic path) and whenever we are using dynamic variable u suppose to use double curly braces 
+
+
+---
+- name: install utility softwares
+  become: yes
+  hosts: all
+  vars:
+    apache_package: httpd
+  tasks:
+    - name: install git
+      ansible.builtin.package:
+        name: git
+        state: present
+    - name: install apache
+      ansible.builtin.package:
+        name: "{{ apache_package }}"
+        state: present

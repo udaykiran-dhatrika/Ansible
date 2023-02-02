@@ -1,0 +1,34 @@
+- name: installing dotnet on ubuntu20
+  hosts: all
+  become: yes
+  tasks:
+    - name: downloading url
+      ansible.builtin.get_url:
+        url: wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        dest: /tmp/
+    - name: installing .deb package
+      ansible.builtin.apt:
+        deb: /tmp/packages-microsoft-prod.deb
+        become: true
+        when: ansible_facts['distribution'] == "Ubuntu"
+    - name: downloading url
+      ansible.builtin.get_url:
+        url: wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.rpm
+        dest: /tmp/
+    - name: installing rpm package
+      ansible.builtin.apt:
+        deb: /tmp/packages-microsoft-prod.rpm
+        become: true
+        when: ansible_facts['distribution'] == "CentOS"
+    - name: https apt transport
+      ansible.builtin.apt:
+        name: apt-transport-https
+        state: present
+        update_cache: true
+        become: true
+    - name: installing dotnet sdk
+      ansible.builtin.apt:
+        name: dotnet-sdk-6.0
+        update_cache: true
+        state: present
+        become: yes

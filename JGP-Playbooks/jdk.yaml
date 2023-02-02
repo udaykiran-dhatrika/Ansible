@@ -1,0 +1,15 @@
+# manual steps
+# sudo apt update
+# sudo apt install openjdk-11-jdk -y  # or 13 or 17
+---
+- name: installation of specified java version on ubuntu 22.04
+  hosts: all
+  become: yes 
+  vars: 
+    java_version: 11
+  tasks:
+    - name: installing java
+      ansible.builtin.apt:
+        name: openjdk-{{java_version}}-jdk 
+        update_cache: yes
+        state: present

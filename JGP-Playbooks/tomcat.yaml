@@ -1,0 +1,79 @@
+# manual steps
+# sudo apt update
+# sudo apt install openjdk-11-jdk -y
+---
+- name: install tomcat 10 on ubuntu 22.04
+  hosts: all
+  become: yes 
+  tasks:
+    - name: installing java11
+      ansible.builtin.apt:
+        name: openjdk-11-jdk 
+        update_cache: yes
+        state: present  #   present means present version is installed and latest means latest version is installed
+# sudo useradd -m(means create a home directory) -U -d(set the users home directory) /opt/tomcat -s /bin/false tomcat
+    - name: create a tomcat user
+      ansible.builtin.user:
+        name: tomcat        #   name of the user
+        create_home: true   #   -m(means create a home directory)
+        group: tomcat       #   name of the group and if we want to add tomcat user to list of groups we can use groups 
+        home: /opt/tomcat   #   -d(set the users home directory path)
+        shell: /bin/false
+        state: present      #   present means create the user and absent means delete the user   
+    - name: create a tomcat group
+      ansible.builtin.group:
+        name: tomcat
+        state: present
+    - name: extract tomcat 10.1.4
+      ansible.builtin.unarchive:
+        src: https://www-eu.apache.org/dist/tomcat/tomcat-10/v10.1.4/bin/apache-tomcat-10.1.4.tar.gz
+        remote_src: yes
+        dest: /opt/tomcat
+    - name: create a symbolic link
+      ansible.builtin.file:
+        src: /opt/tomcat/apache-tomcat-10.1.4
+        dest: /opt/tomcat/latest
+        state: link
+    - name: change permissions
+      ansible.builtin.file:
+        dest: /opt/tomcat
+        recurse: true
+        owner: tomcat
+        group: tomcat
+        state: directory
+    - name: add execute permissions to shell files
+      ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+    - name: create a systemd unit file 
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/tomcat.service
+        src: tomcat.service
+        owner: tomcat
+        group: tomcat
+    - name: reload daemon and start the tomcat
+      ansible.builtin.systemd:
+        name: tomcat
+        daemon_reload: yes
+        enabled: yes
+        state: started
+    - name: copy the users xml
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: /opt/tomcat/latest/conf/tomcat-users.xml
+        owner: tomcat
+        group: tomcat
+    - name: copy the manager app context file
+      ansible.builtin.copy:
+        src: context.xml
+        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml
+        owner: tomcat
+        group: tomcat
+    - name: copy the host manager app context file
+      ansible.builtin.copy:
+        src: hostmanager-context.xml
+        dest: /opt/tomcat/latest/webapps/host-manager/META-INF/context.xml
+        owner: tomcat
+        group: tomcat
+    - name: restart tomcat
+      ansible.builtin.systemd:
+        name: tomcat.service
+        state: restarted

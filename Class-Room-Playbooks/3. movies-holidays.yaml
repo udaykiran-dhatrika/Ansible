@@ -1,0 +1,21 @@
+---
+movies:
+  - name: SeethaRamam
+    starcast:
+      - Dulquer Salmaan
+      - Mrunal Thakur
+    technical:
+      director: Hanu Raghavapoodi
+      producer: Vyjayanthi
+    release: 5th August 2022
+  - 
+  -
+
+---
+destinations:
+  - name: Hyderabad
+    modeoftransport: Bus
+    spots:
+      - Tankbund
+      - Birla Temple
+      - Charminar

@@ -1,0 +1,88 @@
+- name: deploy
+  become: yes
+  hosts: all
+  vars:
+    java: java-11-openjdk-devel
+  tasks:
+    - name: installing java
+      ansible.builtin.debug:
+       msg: installing java11
+    - name: installing openjdk-11-jdk
+      ansible.builtin.yum:
+       name: "{{java}}"
+       state: present
+    - name: wildfly group creating
+      ansible.builtin.group:
+       name: wildfly
+       state: present
+    - name: adding user
+      ansible.builtin.user:
+       name: wildfly
+       shell: /sbin/nologin
+       groups: wildfly
+       create_home: yes
+       home: /opt/wildfly
+    - name: adding url
+      ansible.builtin.get_url:
+        url:  https://download.jboss.org/wildfly/22.0.1.Final/wildfly-22.0.1.Final.tar.gz
+        dest: /tmp/
+        mode: '0440'
+    - name: archeive the files
+      ansible.builtin.unarchive:
+       src: /tmp/wildfly-22.0.1.Final.tar.gz
+       dest: /tmp/
+       remote_src: yes
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+       src: /tmp/wildfly-22.0.1.Final/
+       dest: /opt/wildfly
+       owner: wildfly
+       group: wildfly
+       mode: '777'
+       remote_src: yes
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+       path: /opt/wildfly
+       owner: wildfly
+       group: wildfly
+       recurse: yes
+       mode: '777'
+    - name: Create a directory
+      ansible.builtin.file:
+       path: /etc/wildfly
+       state: directory
+       mode: '777'
+    - name: copy config file into directory
+      ansible.builtin.copy:
+       src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
+       dest: /etc/wildfly/
+       owner: wildfly
+       group: wildfly
+       mode: '777'
+       remote_src: yes
+    - name: copy service file into directory
+      ansible.builtin.copy:
+       src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
+       dest: /etc/systemd/system/
+       owner: wildfly
+       group: wildfly
+       mode: '777'
+       remote_src: yes
+    - name: copy lunch.sh file into directory
+      ansible.builtin.copy:
+       src: /opt/wildfly/docs/contrib/scripts/systemd/launch.sh
+       dest: /opt/wildfly/bin/
+       owner: wildfly
+       group: wildfly
+       mode: '777'
+       remote_src: yes
+    - name: Change file ownership permissions for lunch
+      ansible.builtin.file:
+       path: /opt/wildfly/bin/
+       owner: wildfly
+       mode: '777'
+    - name: Start service widly
+      ansible.builtin.service:
+       name: wildfly
+       state: started
+       enabled: true

@@ -1,0 +1,35 @@
+---
+- name: test inventory
+  hosts: all
+  tasks:
+    - name: print something
+      ansible.builtin.debug:
+        msg: "hello"
+
+---
+- name: test inventory
+  hosts: ubuntu   # all
+  tasks:
+    - name: print my variable
+      ansible.builtin.debug:
+        var: name
+
+---
+- name: test inventory
+  hosts: all
+  tasks:
+    - name: print my variable
+      ansible.builtin.debug:
+        var: name
+
+---
+- name: test inventory
+  hosts: all
+  tasks:
+    - name: print my variable
+      ansible.builtin.debug:
+        var: name
+    - name: print my other variable
+      ansible.builtin.debug:
+        var: group
+    

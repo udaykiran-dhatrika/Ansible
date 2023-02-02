@@ -1,0 +1,29 @@
+---
+- name: installation of apache server and php on UBUNTU # give any name here but mentioning whatever doing is best practice
+  hosts: all # other nodes hosts i.e. private ip addresses
+  become: yes # root or sudo permission 
+  tasks:
+    - name: install apache2 # give any name here but mentioning whatever doing is best practice
+      ansible.builtin.apt: # its a module to install and update 
+        name: apache2 # name and version of apache
+        update_cache: yes # apt-get update
+        state: present # default version is installed if u mention latest it will install a latest version
+    - name: install php
+      ansible.builtin.apt:
+        name: 
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: latest
+        update_cache: yes
+    - name: copy the file
+      ansible.builtin.copy:
+        dest: /var/www/html/info.php
+        content:
+          - <?php phpinfo();?>
+        remote_src: true
+    - name: start the service
+      ansible.builtin.systemd:
+        name: apache2
+        enabled: true
+        state: started

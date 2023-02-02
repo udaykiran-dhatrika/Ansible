@@ -1,0 +1,16 @@
+---
+- name: <purpose> # each of this - represents a play
+  hosts: <where to execute>
+  become: yes # yes means that whether u want to become a sudo user or not or to run tasks with sudo
+  tasks:  # tasks are in multiple in nature
+    - name: <tasks description>
+      <module-name>: # every module will take some parameters 
+          <parameter-1>: <value-1>
+          ..
+          <parameter-n>: <value-n>  # all the are parameters present which are supported by the module
+    - name: <tasks description>
+      <module-name>: # every module will take some parameters 
+          <parameter-1>: <value-1>
+          ..
+          <parameter-n>: <value-n>  # all the are parameters present which are supported by the module
+          state: <desired-state>  # software or file to be present or absent

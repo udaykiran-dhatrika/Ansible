@@ -1,0 +1,18 @@
+# --- # in one yaml file u can write multiple things if u r using 3-aiphons, 
+    # for example i can write another 3-aiphons and proceed with one more YAML file
+---
+name: Quality Thought    # text
+contact:   # object
+  email:   # list   # array tries to tell different things, here 2 different emails
+    - quality@gmail.com
+    - qt@gmail.in
+  phone:   # list
+    - 9999999999
+    - 8888888888
+address:  # list/array (plural)
+  - flat: 407   # multiple objects
+    building: mytrivanam
+    city: Hyderabad
+  - flat: 302   # multiple objects
+    building: nilgiri
+    city: Hyderabad
