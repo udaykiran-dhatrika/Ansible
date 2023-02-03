@@ -1,0 +1,76 @@
+# UBUNTU
+# sudo apt update
+# sudo apt install apache2
+# sudo apt install php libapache2-mod-php php-mysql
+# sudo systemctl enable apache2
+# sudo systemctl start apache2
+# # create a file /var/www/html/info.php  with following content
+# <?php
+# phpinfo();
+# ?> 
+----------------------------------------------------------------------------------------------
+# CENTOS
+# sudo yum update
+# sudo dnf install httpd
+# sudo systemctl enable httpd
+# sudo systemctl start httpd
+# sudo dnf install php php-mysqlnd
+# sudo systemctl restart httpd
+# # create a file /var/www/html/info.php  with following content
+# <?php
+# phpinfo();
+# ?>
+
+---
+- name: install apache server
+  become: yes
+  tasks:
+    - name: install apache on ubuntu
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+      notify:
+        - enable and restart apache2
+    - name: install apache on centos
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      notify:
+        - enable and restart httpd
+      when: ansible_facts['distribution'] == "Centos"
+    - name: install php modules
+      ansible.builtin.apt:
+        name:	    # name supports string, list, and item in loop also
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+      notify:
+        - enable and restart apache2
+    - name: install php modules on centos
+      ansible.builtin.dnf:
+        name:
+          - php
+          - php-mysqlnd
+        state: present
+       when: ansible_facts['distribution'] == "Centos"
+       notify:
+        - enable and restart apache2
+    - name: copy info.php
+      ansible.builtin.copy:
+        src: info.php
+        dest: /var/www/html/info.php    
+  handlers:
+    - name: enable and restart apache2
+      ansible.builtin.systemd:
+        name: apache2
+        enabled: yes
+        state: restarted
+    - name: enable and restart httpd
+      ansible.builtin.systemd:
+        name: httpd
+        enabled: yes
+        state: restarted
